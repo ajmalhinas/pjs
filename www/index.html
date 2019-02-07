@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang='en' >
+    <head>
+        <title>jQuery mobile / persistencejs integration</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.css" />
+        <script src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.js"></script>
+        <script src="lib/persistence.js"></script>
+        <script src="lib/persistence.store.sql.js"></script>
+        <script src="lib/persistence.store.websql.js"></script>
+        <script src="lib/persistence.store.memory.js"></script>
+        <script src="lib/persistence.jquery.js"></script>
+        <script src="lib/persistence.jquery.mobile.js"></script>
+        <script src="myMethods.js"></script>
+        <script type="text/javascript">
+            if (location.protocol == "file:") {
+                alert("Didn't you read the README ? You need to load this page from a server. Haha it is not applicable for phonegapapp");
+            }
+            if (window.openDatabase) {
+                persistence.store.websql.config(persistence, "jquerymobile", 'database', 5 * 1024 * 1024);
+            } else {
+                persistence.store.memory.config(persistence);
+            }
+            persistence.define('Page', {
+                path: "TEXT",
+                data: "TEXT",
+            });
+
+            persistence.define('Image', {
+                path: "TEXT",
+                data: "TEXT",
+            });
+
+            persistence.define('Order', {
+                shipping: "TEXT"
+            });
+
+            persistence.schemaSync();
+
+            $('#reset').click(function () {
+                persistence.reset();
+                persistence.schemaSync();
+                return false;
+            });
+        </script>
+    </head>
+    <body>
+        <button name ="buttonClick" onclick="saveSchool()">Save School</button>
+        <button name ="buttonClick" onclick="saveSchools(schools)">Save Schools(Batch mode)</button>
+        <button name ="buttonClick" onclick="findSchoolById(101)">Finde School 101</button>         
+        <button name ="buttonClick" onclick="deleteSchool()">Delete School</button>
+        <button name ="buttonClick" onclick="saveStudents(students)">Save Students (Batch mode)</button>         
+        <button name ="buttonClick" onclick="findSchoolsByName(name)">findSchoolsHavingName</button>
+        <button name ="buttonClick" onclick="findAllStudentsOfSchool(name)">findAllStudentsOfSchool</button>
+
+    </body>
+</html>
