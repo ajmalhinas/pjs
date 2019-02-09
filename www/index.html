@@ -13,46 +13,65 @@
         <script src="lib/persistence.jquery.js"></script>
         <script src="lib/persistence.jquery.mobile.js"></script>
         <script src="myMethods.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.js"></script>
         <script type="text/javascript">
             if (location.protocol == "file:") {
                 alert("Didn't you read the README ? You need to load this page from a server. Haha it is not applicable for phonegapapp");
             }
             if (window.openDatabase) {
-                persistence.store.websql.config(persistence, "jquerymobile", 'database', 5 * 1024 * 1024);
+                persistence.store.websql.config(persistence, "jquerymobile1", 'database', 5 * 1024 * 1024);
             } else {
                 persistence.store.memory.config(persistence);
             }
-            persistence.define('Page', {
-                path: "TEXT",
-                data: "TEXT",
+
+            // Define School schema
+            var School = persistence.define('School', {
+                school_name: "TEXT",
+                school_id: "INT"
             });
 
-            persistence.define('Image', {
-                path: "TEXT",
-                data: "TEXT",
+            // Add index on name field for School schema
+            School.index(['school_id', 'school_name'])
+
+            // Define Student schema
+            var Student = persistence.define('Student', {
+                student_name: "TEXT",
+                school_name: "TEXT"
             });
 
-            persistence.define('Order', {
-                shipping: "TEXT"
-            });
+            // Define a one-to-many relationship between School and Students
+            School.hasMany('students', Student, 'School');
 
             persistence.schemaSync();
+
+            new_school = new School({ school_name: "Little Flower", school_id: 101});
+            schools = [{ school_name: "Public School", school_id: 102 }, { school_name: "School 3", school_id: 103 }];
+            find_school_id = 102;
+            delete_school_id = 103;
+            school_name = "Little Flower";
+            students = [{ student_name: "Stud1", school_name: "Little Flower" },
+                          {student_name: "Stud2", school_name: "Little Flower"},
+                          {student_name: "Stud3", school_name: "Public School"},
+                          {student_name: "Stud4", school_name: "Public School"}
+                        ];
+            students_of_school = "Little Flower";
 
             $('#reset').click(function () {
                 persistence.reset();
                 persistence.schemaSync();
                 return false;
             });
+
+
         </script>
     </head>
     <body>
-        <button name ="buttonClick" onclick="saveSchool()">Save School</button>
+        <button name ="buttonClick" onclick="saveSchool(new_school)">Save School</button>
         <button name ="buttonClick" onclick="saveSchools(schools)">Save Schools(Batch mode)</button>
-        <button name ="buttonClick" onclick="findSchoolById(101)">Finde School 101</button>         
-        <button name ="buttonClick" onclick="deleteSchool()">Delete School</button>
-        <button name ="buttonClick" onclick="saveStudents(students)">Save Students (Batch mode)</button>         
-        <button name ="buttonClick" onclick="findSchoolsByName(name)">findSchoolsHavingName</button>
-        <button name ="buttonClick" onclick="findAllStudentsOfSchool(name)">findAllStudentsOfSchool</button>
-
+        <button name ="buttonClick" onclick="findSchoolById(find_school_id)">Find School 102</button>
+        <button name ="buttonClick" onclick="deleteSchool(delete_school_id)">Delete School</button>
+        <button name ="buttonClick" onclick="saveStudents(students)">Save Students (Batch mode)</button>
+        <button name ="buttonClick" onclick="findSchoolsByName(school_name)">findSchoolsHavingName</button>
+        <button name ="buttonClick" onclick="findAllStudentsOfSchool(students_of_school)">findAllStudentsOfSchool</button>
     </body>
 </html>
